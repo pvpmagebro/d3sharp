@@ -21,6 +21,7 @@ namespace D3Sharp.Core.Services
             var channel = ChannelsManager.CreateNewChannel();
             // This is an object creator, so we have to map the remote object ID
             this.Client.MapLocalObjectID(channel.ID, request.ObjectId);
+            this.Client.CurrentChannel = channel;
             var builder = CreateChannelResponse.CreateBuilder()
                 .SetObjectId(channel.ID)
                 .SetChannelId(channel.BnetEntityID);
@@ -28,7 +29,8 @@ namespace D3Sharp.Core.Services
             done(builder.Build());
 
             channel.Add((Client)this.Client);
-            channel.NotifyChannelState((Client)this.Client);
+            // Client will ask for update later -- don't send one
+            //channel.NotifyChannelState((Client)this.Client);
         }
 
         public override void JoinChannel(IRpcController controller, JoinChannelRequest request, Action<JoinChannelResponse> done)

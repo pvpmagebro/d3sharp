@@ -1,5 +1,6 @@
 ﻿using D3Sharp.Net;
 using D3Sharp.Utils;
+using D3Sharp.Core.Channels;
 
 namespace D3Sharp.Core.Services
 {
@@ -23,7 +24,10 @@ namespace D3Sharp.Core.Services
         {
             Logger.Trace("RemoveMember");
             Logger.Debug("request:\n{0}", request.ToString());
-            throw new System.NotImplementedException();
+            Logger.Debug("ToonId:\n{0}", this.Client.CurrentToon.BnetEntityID.ToString());
+            this.Client.CurrentChannel.NotifyChannelState((Client)this.Client);
+            this.Client.CurrentChannel = null;
+            done(bnet.protocol.NoData.CreateBuilder().Build());
         }
 
         public override void SendMessage(Google.ProtocolBuffers.IRpcController controller, bnet.protocol.channel.SendMessageRequest request, System.Action<bnet.protocol.NoData> done)
@@ -38,7 +42,10 @@ namespace D3Sharp.Core.Services
 
         public override void UpdateChannelState(Google.ProtocolBuffers.IRpcController controller, bnet.protocol.channel.UpdateChannelStateRequest request, System.Action<bnet.protocol.NoData> done)
         {
-            throw new System.NotImplementedException();
+            Logger.Trace("UpdateChannelState");
+            Logger.Debug("request:\n{0}", request.ToString());
+            this.Client.CurrentChannel.NotifyChannelState((Client)this.Client);
+            done(bnet.protocol.NoData.CreateBuilder().Build());
         }
 
         public override void UpdateMemberState(Google.ProtocolBuffers.IRpcController controller, bnet.protocol.channel.UpdateMemberStateRequest request, System.Action<bnet.protocol.NoData> done)

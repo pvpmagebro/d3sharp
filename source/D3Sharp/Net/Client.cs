@@ -50,7 +50,7 @@ namespace D3Sharp.Net
         // rpc to client
         public void CallMethod(MethodDescriptor method, IMessage request)
         {
-            Logger.Debug("CallMethod with 0 localObjectId");
+            Logger.Debug("CallMethod with localObjectId=0");
             CallMethod(method, request, 0);
         }
 
@@ -69,6 +69,7 @@ namespace D3Sharp.Net
             var remoteObjectId = GetRemoteObjectID(localObjectId);
 
             Logger.Debug("Calling {0} localObjectId={1}, remoteObjectId={2}", method.FullName, localObjectId, remoteObjectId);
+            //Logger.Debug("message:\n{0}", request.ToString());
             
             var packet = new Packet(
                 new Header((byte) serviceId, (uint) (method.Index + 1), this._requestCounter++,(uint) request.SerializedSize, remoteObjectId),

@@ -16,10 +16,10 @@ namespace D3Sharp.Core.Channels
         public Channel(ulong id)
         {
             this.ID = id;
-            this.BnetEntityID = bnet.protocol.EntityId.CreateBuilder().SetHigh(this.ID).SetLow(0).Build();
+            this.BnetEntityID = bnet.protocol.EntityId.CreateBuilder().SetHigh(433661094618860925).SetLow(11233645142038554527).Build();
 
             var builder = bnet.protocol.channel.ChannelState.CreateBuilder()
-                .SetPrivacyLevel(bnet.protocol.channel.ChannelState.Types.PrivacyLevel.PRIVACY_LEVEL_OPEN)
+                .SetPrivacyLevel(bnet.protocol.channel.ChannelState.Types.PrivacyLevel.PRIVACY_LEVEL_OPEN_INVITATION)
                 .SetMaxMembers(8)
                 .SetMinMembers(1)
                 .SetMaxInvitations(12);
@@ -29,6 +29,8 @@ namespace D3Sharp.Core.Channels
 
         public void NotifyChannelState(Client client)
         {
+            // Nothing in here can be hard-coded.
+            // I think this only needs to send changes made to the channel since the last notify
             var field1 =
                 bnet.protocol.presence.Field.CreateBuilder().SetKey(
                     bnet.protocol.presence.FieldKey.CreateBuilder().SetProgram(16974).SetGroup(3).SetField(3).SetIndex(0)
@@ -62,10 +64,40 @@ namespace D3Sharp.Core.Channels
             var channelState = bnet.protocol.channel.ChannelState.CreateBuilder().SetExtension(bnet.protocol.presence.ChannelState.Presence, state);
             var builder = bnet.protocol.channel.UpdateChannelStateNotification.CreateBuilder().SetStateChange(channelState);
 
-            client.CallMethod(bnet.protocol.channel.ChannelSubscriber.Descriptor.FindMethodByName("NotifyUpdateChannelState"), builder.Build());
+            client.CallMethod(bnet.protocol.channel.ChannelSubscriber.Descriptor.FindMethodByName("NotifyUpdateChannelState"), builder.Build(), this.ID);
         }
 
         public void Add(Client client)
+        {
+            var builder = bnet.protocol.channel.AddNotification.CreateBuilder();
+            var identity = bnet.protocol.Identity.CreateBuilder();
+            //identity.SetAccountId(client.Account.BnetAccountID); // TODO: client doesn't want to see this stuff either it asserts.
+            //identity.SetGameAccountId(client.Account.BnetGameAccountID);
+            if (client.Account.Toons.Count > 0) identity.SetToonId(client.Account.Toons.First().Value.BnetEntityID);
+
+            var state = bnet.protocol.channel.MemberState.CreateBuilder()
+                .AddRole(2)
+                .SetPrivileges(64511);
+            var selfBuilder = bnet.protocol.channel.Member.CreateBuilder().SetIdentity(identity.Build()).SetState(state.Build());
+            var self = selfBuilder.Build();
+            builder.SetSelf(self);
+
+            if (client.Account.Toons.Count > 0)
+            {
+                var memberIdentity = bnet.protocol.Identity.CreateBuilder();
+                memberIdentity.SetToonId(client.Account.Toons.First().Value.BnetEntityID);
+
+                var memberState = bnet.protocol.channel.MemberState.CreateBuilder().AddRole(2).SetPrivileges(64511);
+
+                var member = bnet.protocol.channel.Member.CreateBuilder().SetIdentity(memberIdentity).SetState(memberState.Build());
+                builder.AddMember(member);
+            }
+
+            builder.SetChannelState(this.State);
+            client.CallMethod(bnet.protocol.channel.ChannelSubscriber.Descriptor.FindMethodByName("NotifyAdd"), builder.Build(), this.ID);
+        }
+
+        /*public void Add(Client client)
         {
             var identity = client.GetIdentity(false, false, true);
             var user = bnet.protocol.channel.Member.CreateBuilder()
@@ -87,7 +119,7 @@ namespace D3Sharp.Core.Channels
                 builder.AddMember(m);
             }
             client.CallMethod(bnet.protocol.channel.ChannelSubscriber.Descriptor.FindMethodByName("NotifyAdd"), builder.Build(), this.ID);
-        }
+        }*/
 
         public bool HasUser(Client client)
         {
@@ -114,6 +146,11 @@ namespace D3Sharp.Core.Channels
             this.Members.RemoveAll(m => identity == m.Identity);
             client.CurrentChannel = null;
             client.CallMethod(bnet.protocol.channel.ChannelSubscriber.Descriptor.FindMethodByName("NotifyRemove"), builder.Build(), this.ID);
+        }
+        
+        public void RemoveMemberFromChannel(bnet.protocol.EntityId memberId)
+        {
+            // TODO
         }
     }
 }

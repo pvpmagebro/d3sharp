@@ -22,7 +22,8 @@ namespace D3Sharp.Core.Channels
             return channel;
         }
         
-        public static Channel DeleteChannel(ulong id) {
+        public static Channel DeleteChannel(ulong id)
+        {
             throw new System.NotImplementedException();
             // TODO: Mapping removal should be done in client or mayhaps the ID controller
         }
