@@ -249,12 +249,11 @@ namespace D3Sharp
             var cmd = new SQLiteCommand(query, DBManager.ItemsConnection);
             var reader = cmd.ExecuteReader();
             bool set = false;
-            if (!reader.Read())
-                while (reader.Read())
-                {
-                    lblFeet.Text = reader.GetString(0);
-                    set = true;
-                }
+            while (reader.Read())
+            {
+                lblFeet.Text = reader.GetString(0);
+                set = true;
+            }
             if (set == false)
             {
                 lblFeet.Text = cboFeet.Text;
