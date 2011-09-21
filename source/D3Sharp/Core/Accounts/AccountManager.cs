@@ -51,7 +51,7 @@ namespace D3Sharp.Core.Accounts
         private static void LoadAccounts()
         {
             var query = "SELECT * from accounts";
-            var cmd = new SQLiteCommand(query, DBManager.Connection);
+            var cmd = new SQLiteCommand(query, DBManager.ToonConnection);
             var reader = cmd.ExecuteReader();
 
             if (!reader.HasRows) return;
@@ -67,7 +67,7 @@ namespace D3Sharp.Core.Accounts
 
         public static ulong GetNextAvailablePersistantId()
         {
-            var cmd = new SQLiteCommand("SELECT max(id) from accounts", DBManager.Connection);           
+            var cmd = new SQLiteCommand("SELECT max(id) from accounts", DBManager.ToonConnection);           
             try
             {
                 return Convert.ToUInt64(cmd.ExecuteScalar());

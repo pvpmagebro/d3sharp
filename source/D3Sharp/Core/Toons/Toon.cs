@@ -297,7 +297,7 @@ namespace D3Sharp.Core.Toons
                             "UPDATE toons SET name='{0}', class={1}, gender={2}, level={3}, accountId={4} WHERE id={5}",
                             Name, (byte)this.Class, (byte)this.Gender, this.Level, this.AccountID, this.PersistentID);
 
-                    var cmd = new SQLiteCommand(query, DBManager.Connection);
+                    var cmd = new SQLiteCommand(query, DBManager.ToonConnection);
                     cmd.ExecuteNonQuery();
                 }
                 else
@@ -307,7 +307,7 @@ namespace D3Sharp.Core.Toons
                             "INSERT INTO toons (id, name, class, gender, level, accountId) VALUES({0},'{1}',{2},{3},{4},{5})",
                             this.PersistentID, this.Name, (byte)this.Class, (byte)this.Gender, this.Level, this.AccountID);
 
-                    var cmd = new SQLiteCommand(query, DBManager.Connection);
+                    var cmd = new SQLiteCommand(query, DBManager.ToonConnection);
                     cmd.ExecuteNonQuery();                    
                 }
             }
@@ -325,7 +325,7 @@ namespace D3Sharp.Core.Toons
                 if (!ExistsInDB()) return false;
 
                 var query = string.Format("DELETE FROM toons WHERE id={0}", this.PersistentID);
-                var cmd = new SQLiteCommand(query, DBManager.Connection);
+                var cmd = new SQLiteCommand(query, DBManager.ToonConnection);
                 cmd.ExecuteNonQuery();
                 return true;
             }
@@ -343,7 +343,7 @@ namespace D3Sharp.Core.Toons
                     "SELECT id from toons where id={0}",
                     this.PersistentID);
 
-            var cmd = new SQLiteCommand(query, DBManager.Connection);
+            var cmd = new SQLiteCommand(query, DBManager.ToonConnection);
             var reader = cmd.ExecuteReader();
             return reader.HasRows;
         }

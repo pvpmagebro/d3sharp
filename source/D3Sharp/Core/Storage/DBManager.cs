@@ -26,7 +26,8 @@ namespace D3Sharp.Core.Storage
     // just a quick hack - not to be meant a final layer.
     public static class DBManager
     {
-        public static SQLiteConnection Connection { get; private set; }
+        public static SQLiteConnection ToonConnection { get; private set; }
+        public static SQLiteConnection ItemsConnection { get; private set; }
         public static readonly Logger Logger = LogManager.CreateLogger();
 
         static DBManager()
@@ -38,8 +39,10 @@ namespace D3Sharp.Core.Storage
         {
             try
             {
-                Connection = new SQLiteConnection(string.Format("Data Source={0}/Assets/toon.db",System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)));
-                Connection.Open();
+                ToonConnection = new SQLiteConnection(string.Format("Data Source={0}/Assets/toon.db", System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)));
+                ToonConnection.Open();
+                ItemsConnection = new SQLiteConnection(string.Format("Data Source={0}/Assets/items.db", System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)));
+                ItemsConnection.Open();
             }
             catch (Exception e)
             {

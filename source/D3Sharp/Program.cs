@@ -22,10 +22,11 @@ using System.Threading;
 using D3Sharp.Net.BNet;
 using D3Sharp.Net.Game;
 using D3Sharp.Utils;
+using System.Windows.Forms;
 
 namespace D3Sharp
 {
-    internal class Program
+    public class Program
     {
         private static readonly Logger Logger = LogManager.CreateLogger();
 
@@ -34,6 +35,13 @@ namespace D3Sharp
 
         public static void Main(string[] args)
         {
+            Application.Run(new ToonItems());
+        }
+
+        public void StartupServers()
+        {
+            Application.OpenForms["ToonItems"].Close();
+
             AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionHandler; // watch for unhandled-exceptions.
 
             LogManager.Enabled = true; // enable the logger.
@@ -43,11 +51,8 @@ namespace D3Sharp
             PrintLicence();
 
             Logger.Info("D3Sharp v{0} warming-up..", Assembly.GetExecutingAssembly().GetName().Version);
-            StartupServers();
-        }
 
-        private static void StartupServers()
-        {
+
             _bnetServer = new BnetServer();
             _gameServer = new GameServer();
 
@@ -61,6 +66,7 @@ namespace D3Sharp
             while (true)
             {
                 var line = Console.ReadLine();
+
                 if (!string.Equals("quit", line, StringComparison.OrdinalIgnoreCase)
                     && !string.Equals("exit", line, StringComparison.OrdinalIgnoreCase))
                 {

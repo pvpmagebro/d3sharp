@@ -135,7 +135,7 @@ namespace D3Sharp.Core.Accounts
                         "INSERT INTO accounts (id, email) VALUES({0},'{1}')",
                         this.PersistentID, this.Email);
 
-                    var cmd = new SQLiteCommand(query, DBManager.Connection);
+                    var cmd = new SQLiteCommand(query, DBManager.ToonConnection);
                     cmd.ExecuteNonQuery();
             }
             catch (Exception e)

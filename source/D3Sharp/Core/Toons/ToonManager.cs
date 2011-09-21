@@ -75,7 +75,7 @@ namespace D3Sharp.Core.Toons
         private static void LoadToons()
         {
             var query = "SELECT * from toons";
-            var cmd = new SQLiteCommand(query, DBManager.Connection);
+            var cmd = new SQLiteCommand(query, DBManager.ToonConnection);
             var reader = cmd.ExecuteReader();
 
             if (!reader.HasRows) return;
